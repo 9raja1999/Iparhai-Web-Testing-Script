@@ -1,0 +1,7 @@
+1. npm i
+2. npm install selenium-webdriver
+
+3. Download chrome browser IDE and place exe file in [ node_modules\selenium-webdriver\chromedriver.exe ]
+
+4. To start script running execute
+    [ node test_scripts/index.js ]
