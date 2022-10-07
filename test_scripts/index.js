@@ -20,35 +20,59 @@ const FinishButton = (d, i) => {
 
 
     driver.wait(() => { console.log('Waiting') }, 10000);
-    driver.findElement(By.xpath(`/html/body/div[6]/div[2]/div/form/div/div[2]/input`))
-        .then(found => {
 
-            driver.findElement(By.xpath(`//html/body/div[6]/div[2]/div/form/div/div[2]/input`)).click();
+    // start Assessment
+    //*[@id="storeAns2"]
+    driver.findElement(By.xpath(`//*[@id="videoLog"]/button[2]`))
+        .then(found => {
+            console.log('FOUND')
+            driver.findElement(By.xpath(`//*[@id="videoLog"]/button[2]`)).click();
             driver.findElement(By.xpath(`//*[@id="storeAns2"]`)).click()
 
 
 
         })
         .catch(notfound => {
+            let options = [
+                `//*[@id="questionsWrap"]/div[2]/input`,
+                `//*[@id="questionsWrap"]/div[3]/input`,
+                `//*[@id="questionsWrap"]/div[4]/input`,
+            ];
+            let randonOption = parseInt(Math.random()*options.length)
             console.log('Options Not found', notfound)
             console.log('Counter', i)
+            driver.findElement(By.xpath(options[randonOption])).click();
+            driver.findElement(By.xpath('//*[@id="storeAns2"]')).click()
         })
 }
 
 const doSomething = (driver, counter) => {
     console.log(counter)
     // let limit = 0;
-    driver.findElement(By.id("storeAns")).then(found => {
-        // clicking on Finish test button
-        driver.findElement(By.id("storeAns")).click();
+    driver.findElement(By.xpath('//*[@id="reverseFullscreenModal"]')).click();
+    console.log('Modal closed');
 
-        driver.wait(()=>{
+    driver.findElement(By.id("storeAns")).then(async (found) => {
+        // clicking on Finish test button
+
+        storeAns = await driver.findElement(By.id("storeAns"));
+        attribute_value = await storeAns.getAttribute('style');
+
+        driver.wait(() => {
             // clicking on cross button
             console.log('Final Screen');
-            driver.findElement(By.xpath("/html/body/div[6]/div[1]/a[2]/i")).click();
-        },1000);
+            console.log('Attribute : ', attribute_value);
+            if (attribute_value !== 'display: none;')
+                driver.findElement(By.id("storeAns")).click()
+            else
+                setTimeout(() => {
+                    FinishButton(driver, counter++)
+                    doSomething(driver, counter++)
+                }, 3000);
+            // driver.findElement(By.xpath("/html/body/div[6]/div[1]/a[2]/i")).click();
+        }, 1000);
     }).catch(notFound => {
-        
+
 
         setTimeout(() => {
             FinishButton(driver, counter++)
@@ -143,11 +167,11 @@ async function startTesting(driver) {
 
 
                                                     doSomething(driver, 0)
-                                                   
+
                                                 }).catch(notFound => {
                                                     console.log('Start Assessment button not found')
                                                     try {
-                                                        
+
 
                                                         doSomething(driver, 0)
 
